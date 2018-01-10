@@ -34,7 +34,7 @@ describe('total likes', () => {
 })
 
 describe('most likes', () => {
-  const listWithTwoBlogs = [
+  const listWithMostLikesSecond = [
     {
       _id: '5a422aa71b54a676234d17f8',
       title: 'Go To Statement Considered Harmful',
@@ -53,9 +53,33 @@ describe('most likes', () => {
     }
   ]
 
+  const listWithMostLikesFirst = [
+    {
+      _id: "asgas",
+      title: "yes box",
+      author: "t dog",
+      url: "agsga",
+      likes: 10,
+      _v: 1
+    },
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 5,
+      __v: 0
+    }
+  ]
 
-  test('with two element returns correctly', () => {
-    const result = listHelper.blogWithMostLikes(listWithTwoBlogs);
+
+  test('returns last element when it has most likes', () => {
+    const result = listHelper.blogWithMostLikes(listWithMostLikesSecond);
+    expect(result.likes).toBe(10)
+  })
+
+  test.only('returns first element when it has most likes', () => {
+    const result = listHelper.blogWithMostLikes(listWithMostLikesFirst);
     expect(result.likes).toBe(10)
   })
 })
