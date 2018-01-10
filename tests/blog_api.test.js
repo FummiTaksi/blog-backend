@@ -121,7 +121,6 @@ describe('DELETE api/blog/:id', async() => {
 
     test(' when id is correct', async() => {
         let allBlogs = await Blog.find({})
-        console.log("allBlogs",allBlogs)
         const url = "/api/blogs/"  + allBlogs[0]._id
         const result = await api.delete(url)
                                 .expect(204)
@@ -142,6 +141,38 @@ describe('DELETE api/blog/:id', async() => {
         await api.delete("/api/blogs/3532532").expect(400)
     })
 
+})
+
+describe('PUT api/blog/:id', async() => {
+
+    test(' when id is correct, value is changed and status is 200', async() => {
+        let allBlogs = await Blog.find({})
+        const firstBlog = allBlogs[0]
+        const modified = {
+            title: firstBlog.title,
+            url: firstBlog.url,
+            author: firstBlog.author,
+            likes: 1000
+        }
+        const url = '/api/blogs/' + firstBlog._id
+        const result = await api.put(url).send(modified).expect(200)
+        expect(result.body.likes).toBe(1000)
+    })
+
+    test('with not correct if status is 400', async() => {
+        let allBlogs = await Blog.find({})
+        const firstBlog = allBlogs[0]
+        const modified = {
+            title: firstBlog.title,
+            url: firstBlog.url,
+            author: firstBlog.author,
+            likes: 1000
+        }
+        const result = await api
+                        .put('/api/blogs/5235235235')
+                        .send(modified)
+                        .expect(400)
+    })
 })
 
 afterEach(async () => {
