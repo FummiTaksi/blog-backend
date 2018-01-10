@@ -1,17 +1,37 @@
 const listHelper = require('../utils/list_helper')
 
-const listWithOneBlog = [
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0
-  }
-]
+const djikstra =   {
+                    _id: '5a422aa71b54a676234d17f8',
+                    title: 'Go To Statement Considered Harmful',
+                    author: 'Edsger W. Dijkstra',
+                    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+                    likes: 5,
+                    __v: 0
+                    }
+
+const listWithOneBlog = [djikstra]
 
 const emptyList = []
+
+const listWithThreeBlogs = [
+  djikstra,
+  {
+    _id: '1',
+    title: 'akuankan seikkailut',
+    author: 'Aku Ankka',
+    url: 'www.akuankka.fi',
+    likes: 1,
+    _v: 2
+  },
+  {
+    _id: '2',
+    title: "tupu hupu ja lupu",
+    author: 'Aku Ankka',
+    url: "www.akuankka.fi",
+    likes: 0,
+    _v: 3
+  }
+]
 
 test('dummy is called', () => {
   const blogs = []
@@ -35,14 +55,7 @@ describe('total likes', () => {
 describe('most likes', () => {
 
   const listWithMostLikesSecond = [
-    {
-      _id: '5a422aa71b54a676234d17f8',
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    },
+    djikstra,
     {
       _id: "asgas",
       title: "yes box",
@@ -62,14 +75,7 @@ describe('most likes', () => {
       likes: 10,
       _v: 1
     },
-    {
-      _id: '5a422aa71b54a676234d17f8',
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    }
+    djikstra
   ]
 
 
@@ -117,35 +123,9 @@ describe('most blogs', () => {
 
   })
 
-  describe('with list containing two elements', () => {
+  describe('with list containing 3 elements', () => {
 
-  const listWithTwoBlogs = [
-    {
-      _id: '5a422aa71b54a676234d17f8',
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    },
-    {
-      _id: '1',
-      title: 'akuankan seikkailut',
-      author: 'Aku Ankka',
-      url: 'www.akuankka.fi',
-      likes: 1,
-      _v: 2
-    },
-    {
-      _id: '2',
-      title: "tupu hupu ja lupu",
-      author: 'Aku Ankka',
-      url: "www.akuankka.fi",
-      likes: 0,
-      _v: 3
-    }
-  ]
-  const result = listHelper.mostBlogs(listWithTwoBlogs)
+  const result = listHelper.mostBlogs(listWithThreeBlogs)
   test(' returns correct author', () => {
     expect(result.author).toBe('Aku Ankka')
   })
@@ -159,13 +139,28 @@ describe('most blogs', () => {
 
 describe('mostLikes', () => {
   
-  describe('with empty list', () => {
+  describe(' with empty list', () => {
     const result = listHelper.mostLikes(emptyList)
 
     test(' has correct author', () => {
       expect(result.author).toBe('no authors in this list!')
     })
-    
+
+    test(' votes is 0', () => {
+      expect(result.votes).toBe(0)
+    })
+  })
+
+  describe(" with list containing three blogs and two authors", () => {
+    const result = listHelper.mostLikes(listWithThreeBlogs)
+
+    test(' has correct author', () => {
+      expect(result.author).toBe('Edsger W. Dijkstra')
+    })
+
+    test(' has correct amount of votes', () => {
+      expect(result.votes).toBe(5)
+    })
   })
 })
 
