@@ -18,6 +18,9 @@ blogsRouter.get('/', async(request, response) => {
 
 blogsRouter.post('/', async(request, response) => {
     const blogToBeAdded = request.body
+    if (!blogToBeAdded.title) {
+        return response.status(400).json({error: 'Title missing'})
+    }
     blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
     const blog = new Blog(blogToBeAdded)
     const result = await blog.save()
