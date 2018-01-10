@@ -27,6 +27,14 @@ beforeAll(async () => {
     await blogObject.save()
   })
 
+  beforeEach(async () => {
+    let blogObject = new Blog(initialBlogs[0])
+    await blogObject.save()
+  
+    blogObject = new Blog(initialBlogs[1])
+    await blogObject.save()
+  })
+
 describe('GET api/blogs', () => {
 
     test(' blogs are returned as json', async () => {
@@ -73,15 +81,28 @@ describe('POST api/blogs', () => {
                                 .send(newBlog)
                                 .expect(201)
                                 .expect('Content-Type', /application\/json/)
-                                
         expect(result.body.likes).toBe(0)
         const response = await api.get('/api/blogs')
         const likes = response.body.map(r => r.likes)
         expect(likes).toContain(0)
     })
+
+    test(' if title is not defined, blog is not created and status is 400', async () => {
+        const withoutTitle = {
+            author: "Pekka Puupää",
+            url: "suomi.fi"
+        }
+        const result = await api.post('/api/blogs')
+                                 .send(withoutTitle)
+                                 .expect(400)
+        const response = await api.get('/api/blogs')
+        expect(response.body.length).toBe(2)
+    })
 })
 
-
+afterEach(async () => {
+    await Blog.remove({})
+})
 
 afterAll(() => {
   server.close()
