@@ -74,17 +74,17 @@ describe('most likes', () => {
 
 
   test('returns last element when it has most likes', () => {
-    const result = listHelper.blogWithMostLikes(listWithMostLikesSecond);
+    const result = listHelper.favoriteBlog(listWithMostLikesSecond);
     expect(result.likes).toBe(10)
   })
 
   test('returns first element when it has most likes', () => {
-    const result = listHelper.blogWithMostLikes(listWithMostLikesFirst);
+    const result = listHelper.favoriteBlog(listWithMostLikesFirst);
     expect(result.likes).toBe(10)
   })
 
   test('method dont change order of original list', () => {
-    listHelper.blogWithMostLikes(listWithMostLikesSecond)
+    listHelper.favoriteBlog(listWithMostLikesSecond)
     expect(listWithMostLikesSecond[0].likes).toBe(5)
   })
 })

@@ -8,9 +8,9 @@ const dummy = (blogs) => {
       },0)
   }
 
-  const blogWithMostLikes = (blogs) => {
+  const favoriteBlog = (blogs) => {
       return blogs.slice().sort((a,b) => {return a.likes < b.likes})[0];
   }  
   module.exports = {
-    dummy, totalLikes, blogWithMostLikes
+    dummy, totalLikes, favoriteBlog
   }
