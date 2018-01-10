@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "watch": "node_modules/.bin/nodemon index.js",
-    "test": "node_modules/.bin/jest --verbose tests"
+    "test": "./node_modules/.bin/jest --verbose"
   },
   "author": "Aleksi Mustonen",
   "license": "MIT",
