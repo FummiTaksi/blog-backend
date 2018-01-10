@@ -32,3 +32,30 @@ describe('total likes', () => {
     expect(result).toBe(0)
   })
 })
+
+describe('most likes', () => {
+  const listWithTwoBlogs = [
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 5,
+      __v: 0
+    },
+    {
+      _id: "asgas",
+      title: "yes box",
+      author: "t dog",
+      url: "agsga",
+      likes: 10,
+      _v: 1
+    }
+  ]
+
+
+  test('with two element returns correctly', () => {
+    const result = listHelper.blogWithMostLikes(listWithTwoBlogs);
+    expect(result.likes).toBe(10)
+  })
+})
