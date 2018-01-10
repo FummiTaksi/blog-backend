@@ -62,6 +62,23 @@ describe('POST api/blogs', () => {
         expect(response.body.length).toBe(initialBlogs.length + 1)
                 
     })
+
+    test(' if likes is not defined, it is defined as 0', async () => {
+        const newBlog = {
+            title: "Introduction to manual testing",
+            author: "Aleksi Mustonen",
+            url: "manual.com"
+        }
+        const result = await api.post('/api/blogs')
+                                .send(newBlog)
+                                .expect(201)
+                                .expect('Content-Type', /application\/json/)
+                                
+        expect(result.body.likes).toBe(0)
+        const response = await api.get('/api/blogs')
+        const likes = response.body.map(r => r.likes)
+        expect(likes).toContain(0)
+    })
 })
 
 
