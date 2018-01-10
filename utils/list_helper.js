@@ -9,7 +9,7 @@ const dummy = (blogs) => {
   }
 
   const blogWithMostLikes = (blogs) => {
-      return blogs.sort((a,b) => {return a.likes < b.likes})[0];
+      return blogs.slice().sort((a,b) => {return a.likes < b.likes})[0];
   }  
   module.exports = {
     dummy, totalLikes, blogWithMostLikes
