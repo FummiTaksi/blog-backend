@@ -1,5 +1,18 @@
 const listHelper = require('../utils/list_helper')
 
+const listWithOneBlog = [
+  {
+    _id: '5a422aa71b54a676234d17f8',
+    title: 'Go To Statement Considered Harmful',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    likes: 5,
+    __v: 0
+  }
+]
+
+const emptyList = []
+
 test('dummy is called', () => {
   const blogs = []
   const result = listHelper.dummy(blogs)
@@ -8,32 +21,19 @@ test('dummy is called', () => {
 
 describe('total likes', () => {
 
-  const listWithOneBlog = [
-    {
-      _id: '5a422aa71b54a676234d17f8',
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    }
-  ]
-
-  const emptyList = []
-
   test('when list has only one blog equals the likes of that', () => {
     const result = listHelper.totalLikes(listWithOneBlog)
     expect(result).toBe(5)
   })
 
-  test('result is 0 with empty list', () => {
-    
+  test('result is 0 with empty list', () => {   
     const result = listHelper.totalLikes(emptyList)
     expect(result).toBe(0)
   })
 })
 
 describe('most likes', () => {
+
   const listWithMostLikesSecond = [
     {
       _id: '5a422aa71b54a676234d17f8',
@@ -91,18 +91,33 @@ describe('most likes', () => {
 
 describe('most blogs', () => {
 
-  const emptyList = []
+  describe(' with empty list', () => {
+    const result = listHelper.mostBlogs(emptyList)
+    test(' name is correct', () => {
+      expect(result.author).toBe('no authors in this list!')
+    })
 
-  const listWithOneBlog = [
-    {
-      _id: '5a422aa71b54a676234d17f8',
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    }
-  ]
+    test(' amount is 0', () => {
+      expect(result.amount).toBe(0)
+    })
+
+  })
+
+  describe(' with list containing one element', () => {
+ 
+    const result = listHelper.mostBlogs(listWithOneBlog)
+
+    test(' returns correct author', () => {
+      expect(result.author).toBe('Edsger W. Dijkstra')
+    })
+
+    test(' returns correct amount', () => {
+      expect(result.amount).toBe(1)
+    })
+
+  })
+
+  describe('with list containing two elements', () => {
 
   const listWithTwoBlogs = [
     {
@@ -130,33 +145,27 @@ describe('most blogs', () => {
       _v: 3
     }
   ]
-
-  test('with empty list name is correct', () => {
-    const result = listHelper.mostBlogs(emptyList)
-    expect(result.author).toBe('no authors in this list!')
-  })
-  test('with empty list amount is 0', () => {
-    const result = listHelper.mostBlogs(emptyList)
-    expect(result.amount).toBe(0)
-  })
-  test('returns correct author with list of one', () => {
-      const result = listHelper.mostBlogs(listWithOneBlog)
-      expect(result.author).toBe('Edsger W. Dijkstra')
-  })
-
-  test('returns correct amount with list of one', () => {
-    const result = listHelper.mostBlogs(listWithOneBlog)
-    expect(result.amount).toBe(1)
-  })
-
-  test('returns correct author with list of two', () => {
-    const result = listHelper.mostBlogs(listWithTwoBlogs)
+  const result = listHelper.mostBlogs(listWithTwoBlogs)
+  test(' returns correct author', () => {
     expect(result.author).toBe('Aku Ankka')
   })
 
-  test('returns correct amount with list of two', () => {
-    const result = listHelper.mostBlogs(listWithTwoBlogs)
+  test(' returns correct amount', () => {
     expect(result.amount).toBe(2)
   })
 
+  })
 })
+
+describe('mostLikes', () => {
+  
+  describe('with empty list', () => {
+    const result = listHelper.mostLikes(emptyList)
+
+    test(' has correct author', () => {
+      expect(result.author).toBe('no authors in this list!')
+    })
+    
+  })
+})
+
