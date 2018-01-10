@@ -78,8 +78,13 @@ describe('most likes', () => {
     expect(result.likes).toBe(10)
   })
 
-  test.only('returns first element when it has most likes', () => {
+  test('returns first element when it has most likes', () => {
     const result = listHelper.blogWithMostLikes(listWithMostLikesFirst);
     expect(result.likes).toBe(10)
+  })
+
+  test('method dont change order of original list', () => {
+    listHelper.blogWithMostLikes(listWithMostLikesSecond)
+    expect(listWithMostLikesSecond[0].likes).toBe(5)
   })
 })
