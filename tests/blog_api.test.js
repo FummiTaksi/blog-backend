@@ -17,14 +17,18 @@ const initialBlogs = [
         likes: 90
     }
 ]
+
+
+const nonExistingId = async () => {
+    const blog = new Blog()
+    await blog.save()
+    await blog.remove()
+  
+    return blog._id.toString()
+  }
+  
 beforeAll(async () => {
     await Blog.remove({})
-  
-    let blogObject = new Blog(initialBlogs[0])
-    await blogObject.save()
-  
-    blogObject = new Blog(initialBlogs[1])
-    await blogObject.save()
   })
 
   beforeEach(async () => {
@@ -111,6 +115,33 @@ describe('POST api/blogs', () => {
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(2)
     })
+})
+
+describe('DELETE api/blog/:id', async() => {
+
+    test(' when id is correct', async() => {
+        let allBlogs = await Blog.find({})
+        console.log("allBlogs",allBlogs)
+        const url = "/api/blogs/"  + allBlogs[0]._id
+        const result = await api.delete(url)
+                                .expect(204)
+        allBlogs = await Blog.find({})
+        expect(allBlogs.length).toBe(1)
+    })
+
+    test(' when id dont exist, status 404 is retrieved', async() => {
+        const id = await nonExistingId();
+        const url = "/api/blogs/" + id
+        const result = await api.delete(url)
+                                .expect(204)
+        const allBlogs = await Blog.find({})
+        expect(allBlogs.length).toBe(2)
+    })
+
+    test(' status 400 if id is not legit', async() => {
+        await api.delete("/api/blogs/3532532").expect(400)
+    })
+
 })
 
 afterEach(async () => {
