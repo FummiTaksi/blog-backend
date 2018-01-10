@@ -6,6 +6,7 @@ const cors = require('cors')
 const Blog = require('./models/blog')
 const blogRouter = require('./controllers/blogs')
 const config = require('./utils/config')
+const mongoose = require('mongoose')
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -13,7 +14,18 @@ app.use(express.static('build'))
 app.use('/api/blogs',blogRouter)
 
 const port = config.port
-const mongoUrl = config.mongoUrl
 
-app.listen(config.port)
-console.log(`Server running on port ${port}`)
+const server = http.createServer(app)
+
+
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`)
+})
+
+server.on('close', () => {
+  mongoose.connection.close()
+})
+
+module.exports = {
+  app,server
+}
