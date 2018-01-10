@@ -27,7 +27,7 @@ beforeAll(async () => {
     await blogObject.save()
   })
 
-describe('GET /api/notes', () => {
+describe('GET /api/blogs', () => {
 
     test(' blogs are returned as json', async () => {
         await api
@@ -36,7 +36,7 @@ describe('GET /api/notes', () => {
           .expect('Content-Type', /application\/json/)
       })
       
-      test(' all notes are returned', async () => {
+      test(' all blogs are returned', async () => {
           const response = await api.get('/api/blogs')
           expect(response.body.length).toBe(initialBlogs.length)
       })
