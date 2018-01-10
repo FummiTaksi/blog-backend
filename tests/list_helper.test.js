@@ -88,3 +88,75 @@ describe('most likes', () => {
     expect(listWithMostLikesSecond[0].likes).toBe(5)
   })
 })
+
+describe('most blogs', () => {
+
+  const emptyList = []
+
+  const listWithOneBlog = [
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 5,
+      __v: 0
+    }
+  ]
+
+  const listWithTwoBlogs = [
+    {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+      likes: 5,
+      __v: 0
+    },
+    {
+      _id: '1',
+      title: 'akuankan seikkailut',
+      author: 'Aku Ankka',
+      url: 'www.akuankka.fi',
+      likes: 1,
+      _v: 2
+    },
+    {
+      _id: '2',
+      title: "tupu hupu ja lupu",
+      author: 'Aku Ankka',
+      url: "www.akuankka.fi",
+      likes: 0,
+      _v: 3
+    }
+  ]
+
+  test('with empty list name is correct', () => {
+    const result = listHelper.mostBlogs(emptyList)
+    expect(result.author).toBe('no authors in this list!')
+  })
+  test('with empty list amount is 0', () => {
+    const result = listHelper.mostBlogs(emptyList)
+    expect(result.amount).toBe(0)
+  })
+  test('returns correct author with list of one', () => {
+      const result = listHelper.mostBlogs(listWithOneBlog)
+      expect(result.author).toBe('Edsger W. Dijkstra')
+  })
+
+  test('returns correct amount with list of one', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    expect(result.amount).toBe(1)
+  })
+
+  test('returns correct author with list of two', () => {
+    const result = listHelper.mostBlogs(listWithTwoBlogs)
+    expect(result.author).toBe('Aku Ankka')
+  })
+
+  test('returns correct amount with list of two', () => {
+    const result = listHelper.mostBlogs(listWithTwoBlogs)
+    expect(result.amount).toBe(2)
+  })
+
+})
