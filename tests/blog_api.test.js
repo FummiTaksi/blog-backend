@@ -98,6 +98,19 @@ describe('POST api/blogs', () => {
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(2)
     })
+
+    test(' if url is not defined, blog is not created and status is 400', async () => {
+        const withoutUrl = {
+            author: "Matti Mainio",
+            title: "Suomalainen talousmarkkinoilla",
+            likes: 3
+        }
+        const result = await api.post('/api/blogs')
+                                .send(withoutUrl)
+                                .expect(400)
+        const response = await api.get('/api/blogs')
+        expect(response.body.length).toBe(2)
+    })
 })
 
 afterEach(async () => {
