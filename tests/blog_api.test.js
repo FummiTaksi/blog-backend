@@ -27,7 +27,7 @@ beforeAll(async () => {
     await blogObject.save()
   })
 
-describe('GET /api/blogs', () => {
+describe('GET api/blogs', () => {
 
     test(' blogs are returned as json', async () => {
         await api
@@ -41,6 +41,27 @@ describe('GET /api/blogs', () => {
           expect(response.body.length).toBe(initialBlogs.length)
       })
 
+})
+
+describe('POST api/blogs', () => {
+
+    test(' with correct blog increases amount in blogs', async () => {
+        const newBlog = {
+            title: "How to live in Sweden",
+            author: "Ulf Johanson ",
+            url: "sweden.com",
+            likes: 7
+          }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const response = await api.get('/api/blogs')
+        expect(response.body.length).toBe(initialBlogs.length + 1)
+                
+    })
 })
 
 
