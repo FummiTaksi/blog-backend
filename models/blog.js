@@ -1,9 +1,7 @@
 const mongoose = require('mongoose')
-if ( process.env.NODE_ENV !== 'production' ) {
-    require('dotenv').config()
-  }
-const url = process.env.MONGOLAB_URL
-mongoose.connect(url, {useMongoClient: true})
+const config = require('../utils/config')
+
+mongoose.connect(config.mongoUrl, {useMongoClient: true})
 mongoose.Promise = global.Promise;
 
 const Blog = mongoose.model('Blog', {
