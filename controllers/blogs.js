@@ -18,8 +18,8 @@ blogsRouter.get('/', async(request, response) => {
 
 blogsRouter.post('/', async(request, response) => {
     const blogToBeAdded = request.body
-    if (!blogToBeAdded.title) {
-        return response.status(400).json({error: 'Title missing'})
+    if (!blogToBeAdded.title || !blogToBeAdded.url) {
+        return response.status(400).json({error: 'Bad Content'})
     }
     blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
     const blog = new Blog(blogToBeAdded)
