@@ -253,6 +253,21 @@ describe('POST /api/users', async() => {
             const afterAdding = await usersInDb()
             expect(afterAdding.length).toBe(beforeAdding.length)
         })
+
+        test('if adult is not defined, it will be set to true', async() => {
+            const withoutAdult = {
+                name: "Jee Cotton",
+                username: "Jeec",
+                password: "Kukkuluuruu"
+            }
+
+            const result = await api.post('/api/users')
+                                    .send(withoutAdult)
+                                    .expect(200)
+            expect(result.body.adult).toBeTruthy()
+            const afterAdding = await usersInDb()
+            expect(afterAdding[1].adult).toBeTruthy()
+        })
     
     })
 
