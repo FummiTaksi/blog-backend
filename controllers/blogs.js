@@ -20,16 +20,31 @@ blogsRouter.get('/', async(request, response) => {
   })
 
 blogsRouter.post('/', async(request, response) => {
-    const blogToBeAdded = request.body
-    if (!blogToBeAdded.title || !blogToBeAdded.url) {
-        return response.status(400).json({error: 'Bad Content'})
+    try {
+        const blogToBeAdded = request.body
+        if (!blogToBeAdded.title || !blogToBeAdded.url) {
+            return response.status(400).json({error: 'Bad Content'})
+        }
+        blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
+        const users = await User.find({})
+        const firstPerson = users[0]
+        blogToBeAdded.user = firstPerson._id
+        const personToBeUpdated = {
+            name: firstPerson.name,
+            username: firstPerson.username,
+            adult: firstPerson.adult,
+            blogs: firstPerson.blogs
+        }
+        const blog = new Blog(blogToBeAdded)
+        personToBeUpdated.blogs = personToBeUpdated.blogs.concat(blog)
+        await User.findByIdAndUpdate(firstPerson._id, personToBeUpdated)
+        const result = await blog.save()
+        response.status(201).json(formatBlog(result))
     }
-    blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
-    const users = await User.find({})
-    blogToBeAdded.user = users[0]._id
-    const blog = new Blog(blogToBeAdded)
-    const result = await blog.save()
-    response.status(201).json(formatBlog(result))
+    catch(error) {
+        response.status(400).json(error)
+    }
+
 })
 
 blogsRouter.delete('/:id', async(request, response) => {
