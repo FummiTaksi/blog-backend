@@ -198,6 +198,22 @@ describe('POST /api/users', async() => {
             const afterAdding = await usersInDb();
             expect(afterAdding.length).toBe(beforeAdding.length + 1)
         })
+
+        test('user is not created if usernames length is 2', async() => {
+            const beforeAdding = await usersInDb();
+            const newUser = {
+                name: "Jaakko Java",
+                username: "JJ",
+                adult: false,
+                password: "jees"
+            }
+            const result = await api.
+                                post('/api/users')
+                                .send(newUser)
+                                .expect(400)
+            const afterAdding = await usersInDb()
+            expect(afterAdding.length).toBe(beforeAdding.length)
+        })
     
     })
 
