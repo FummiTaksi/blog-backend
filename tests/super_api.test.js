@@ -186,9 +186,9 @@ describe('POST /api/users', async() => {
             const beforeAdding = await usersInDb();
             const newUser = {
                 name: "Pink Lily",
-                username: "Tira",
+                username: "Tir",
                 adult: false,
-                password: "HurttaHunningolla"
+                password: "T1r"
             }
             const result = await api
                                 .post('/api/users')
@@ -211,6 +211,25 @@ describe('POST /api/users', async() => {
                                 post('/api/users')
                                 .send(newUser)
                                 .expect(400)
+            expect(result.body.error).toBe('username too short')
+            const afterAdding = await usersInDb()
+            expect(afterAdding.length).toBe(beforeAdding.length)
+        })
+
+        test('user is not created if password length is 2', async() => {
+            const beforeAdding = await usersInDb()
+            const newUser = {
+                name: "Raimo Ruby",
+                username: "RoR",
+                adult: true,
+                password: "12"
+            }
+            const result = await api.
+                            post('/api/users')
+                            .send(newUser)
+                            .expect(400)
+                
+            expect(result.body.error).toBe('password too short')
             const afterAdding = await usersInDb()
             expect(afterAdding.length).toBe(beforeAdding.length)
         })
