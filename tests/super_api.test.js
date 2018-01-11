@@ -243,7 +243,7 @@ describe('POST /api/users', async() => {
             expect(afterAdding.length).toBe(beforeAdding.length)
         })
 
-        test.only('cannot create user with username that is in use', async() => {
+        test('cannot create user with username that is in use', async() => {
             const beforeAdding = await usersInDb();
             const result = await api.post('/api/users')
                                     .send(initialUser)
