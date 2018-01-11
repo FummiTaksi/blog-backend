@@ -180,7 +180,7 @@ describe('PUT api/blog/:id', async() => {
     })
 })
 
-describe.skip('POST /api/users', async() => {
+describe('POST /api/users', async() => {
     
         test('creating user with valid input returns 200 and user is created', async() => {
             const beforeAdding = await usersInDb();
