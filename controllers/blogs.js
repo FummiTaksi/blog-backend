@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const formatBlog = (blog) => {
     return {
@@ -7,12 +8,14 @@ const formatBlog = (blog) => {
       title: blog.title,
       author: blog.author,
       url: blog.url,
-      likes: blog.likes
+      likes: blog.likes,
+      user: blog.user
     }
   }
 
 blogsRouter.get('/', async(request, response) => {
     const blogs = await Blog.find({})
+                        .populate('user', { name: 1, username: 1 , adult: 1} )
     response.json(blogs.map(formatBlog));
   })
 
@@ -22,6 +25,8 @@ blogsRouter.post('/', async(request, response) => {
         return response.status(400).json({error: 'Bad Content'})
     }
     blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
+    const users = await User.find({})
+    blogToBeAdded.user = users[0]._id
     const blog = new Blog(blogToBeAdded)
     const result = await blog.save()
     response.status(201).json(formatBlog(result))

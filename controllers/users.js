@@ -2,6 +2,17 @@ const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
 
+
+const formatUser = (user) => {
+    return {
+      id: user._id,
+      username: user.username,
+      name: user.name,
+      adult: user.adult,
+      blogs: user.blogs
+    }
+  }
+
 usersRouter.post('/', async (request, response) => {
   try {
     const body = request.body
@@ -35,6 +46,13 @@ usersRouter.post('/', async (request, response) => {
     console.log(exception)
     response.status(500).json({ error: 'something whent wrong...' })
   }
+})
+
+usersRouter.get('/', async(request, response) => {
+    const users = await User
+        .find({})
+        .populate('blogs', { title: 1, url: 1 , author: 1, likes: 1} )
+  response.json(users.map(formatUser))
 })
 
 module.exports = usersRouter
