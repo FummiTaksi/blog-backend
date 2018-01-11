@@ -2,6 +2,7 @@ const supertest = require('supertest')
 const { app, server } = require('../index')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
     {
@@ -19,6 +20,9 @@ const initialBlogs = [
 ]
 
 
+const usersInDb = async () => {
+    return await User.find({})
+}
 const nonExistingId = async () => {
     const blog = new Blog()
     await blog.save()
@@ -29,6 +33,7 @@ const nonExistingId = async () => {
   
 beforeAll(async () => {
     await Blog.remove({})
+    await User.remove({})
   })
 
   beforeEach(async () => {
@@ -175,8 +180,30 @@ describe('PUT api/blog/:id', async() => {
     })
 })
 
+describe.skip('POST /api/users', async() => {
+    
+        test('creating user with valid input returns 200 and user is created', async() => {
+            const beforeAdding = await usersInDb();
+            const newUser = {
+                name: "Pink Lily",
+                username: "Tira",
+                adult: false,
+                password: "HurttaHunningolla"
+            }
+            const result = await api
+                                .post('/api/users')
+                                .send(newUser)
+                                .expect(200)
+                                .expect('Content-Type', /application\/json/)
+            const afterAdding = await usersInDb();
+            expect(afterAdding.length).toBe(beforeAdding.length + 1)
+        })
+    
+    })
+
 afterEach(async () => {
     await Blog.remove({})
+    await User.remove({})
 })
 
 afterAll(() => {
