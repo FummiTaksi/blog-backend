@@ -9,6 +9,10 @@ usersRouter.post('/', async (request, response) => {
     if (!username || username.length <= 2) {
         return response.status(400).json({error: 'username too short'})
     }
+    const usersWithSameUsername = await User.find({username: username})
+    if (usersWithSameUsername.length > 0 ) {
+        return response.status(400).json({error: 'username must be unique'})
+    }
     const password = body.password
     if (!password || password.length <= 2) {
         return response.status(400).json({error: 'password too short'})
