@@ -19,6 +19,13 @@ const initialBlogs = [
     }
 ]
 
+const initialUser = {
+    name: "Super User",
+    username: "admin",
+    adult: true,
+    password: "password"
+}
+
 
 const usersInDb = async () => {
     return await User.find({})
@@ -42,6 +49,8 @@ beforeAll(async () => {
   
     blogObject = new Blog(initialBlogs[1])
     await blogObject.save()
+    const firstUser = new User(initialUser)
+    await firstUser.save()
   })
 
 describe('GET api/blogs', () => {
@@ -230,6 +239,17 @@ describe('POST /api/users', async() => {
                             .expect(400)
                 
             expect(result.body.error).toBe('password too short')
+            const afterAdding = await usersInDb()
+            expect(afterAdding.length).toBe(beforeAdding.length)
+        })
+
+        test.only('cannot create user with username that is in use', async() => {
+            const beforeAdding = await usersInDb();
+            const result = await api.post('/api/users')
+                                    .send(initialUser)
+                                    .expect(400)
+
+            expect(result.body.error).toBe('username must be unique')
             const afterAdding = await usersInDb()
             expect(afterAdding.length).toBe(beforeAdding.length)
         })
