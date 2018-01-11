@@ -24,7 +24,7 @@ usersRouter.post('/', async (request, response) => {
     const user = new User({
       username: body.username,
       name: body.name,
-      adult: body.adult,
+      adult: body.adult ? body.adult  : true,
       passwordHash
     })
 
