@@ -15,6 +15,9 @@ app.use(express.static('build'))
 app.use('/api/blogs',blogRouter)
 app.use('/api/users',usersRouter)
 
+mongoose.connect(config.mongoUrl, { useMongoClient: true })
+mongoose.Promise = global.Promise
+
 const port = config.port
 
 const server = http.createServer(app)
