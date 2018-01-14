@@ -50,7 +50,6 @@ blogsRouter.post('/', async(request, response) => {
         response.status(201).json(formatBlog(result))
     }
     catch(error) {
-        console.log("catch",error)
         response.status(400).json(error)
     }
 
