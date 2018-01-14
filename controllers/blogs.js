@@ -1,6 +1,16 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+
+const getTokenFrom = (request) => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+      return authorization.substring(7)
+    }
+    return null
+  }
 
 const formatBlog = (blog) => {
     return {
@@ -21,13 +31,20 @@ blogsRouter.get('/', async(request, response) => {
 
 blogsRouter.post('/', async(request, response) => {
     try {
+        const token = getTokenFrom(request)
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+    
+        if (!token || !decodedToken.id) {
+          return response.status(401).json({ error: 'token missing or invalid' })
+        }
+    
         const blogToBeAdded = request.body
         if (!blogToBeAdded.title || !blogToBeAdded.url) {
             return response.status(400).json({error: 'Bad Content'})
         }
         blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
-        const users = await User.find({})
-        const firstPerson = users[0]
+        const userWithSameId = await User.find({_id: decodedToken.id})
+        const firstPerson = userWithSameId[0]
         blogToBeAdded.user = firstPerson._id
         const personToBeUpdated = {
             name: firstPerson.name,
