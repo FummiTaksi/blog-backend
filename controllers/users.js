@@ -43,7 +43,6 @@ usersRouter.post('/', async (request, response) => {
 
     response.json(savedUser)
   } catch (exception) {
-    console.log(exception)
     response.status(500).json({ error: 'something whent wrong...' })
   }
 })

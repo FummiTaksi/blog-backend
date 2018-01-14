@@ -19,12 +19,25 @@ const initialBlogs = [
     }
 ]
 
-const initialUser = {
-    name: "Super User",
-    username: "admin",
-    adult: true,
-    password: "password"
-}
+const initialUsers = [
+    {
+        name: "Super User",
+        username: "admin",
+        password: "password",
+        adult: true
+
+    },
+    {
+        name: "Normal User",
+        username: "user",
+        password: "password",
+        adult: true,
+
+    }
+
+]
+
+
 
 
 const usersInDb = async () => {
@@ -49,8 +62,11 @@ beforeAll(async () => {
   
     blogObject = new Blog(initialBlogs[1])
     await blogObject.save()
-    const firstUser = new User(initialUser)
-    await firstUser.save()
+    const firstUser = initialUsers[0]
+
+    const dafuq = await api.post('/api/users').send(firstUser)
+    const secondUser = initialUsers[1]
+    await api.post('/api/users').send(secondUser)
   })
 
 describe('GET api/blogs', () => {
@@ -72,6 +88,8 @@ describe('GET api/blogs', () => {
 describe('POST api/blogs', () => {
 
     test(' with correct blog increases amount in blogs', async () => {
+        const admin = {username: "admin", password: "password"}
+        const login = await api.post('/api/login').send(admin).expect(200)
         const newBlog = {
             title: "How to live in Sweden",
             author: "Ulf Johanson ",
@@ -81,6 +99,7 @@ describe('POST api/blogs', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .set('Authorization', 'bearer ' + login.body.token)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
@@ -246,7 +265,7 @@ describe('POST /api/users', async() => {
         test('cannot create user with username that is in use', async() => {
             const beforeAdding = await usersInDb();
             const result = await api.post('/api/users')
-                                    .send(initialUser)
+                                    .send(initialUsers[0])
                                     .expect(400)
 
             expect(result.body.error).toBe('username must be unique')
