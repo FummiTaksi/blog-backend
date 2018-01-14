@@ -52,8 +52,8 @@ const nonExistingId = async () => {
   }
 
 
-  const loginAndReturnToken = async () => {
-    const admin = {username: "admin", password: "password"}
+  const loginAndReturnToken = async (username,password) => {
+    const admin = {username: username, password: password}
     const login = await api.post('/api/login').send(admin).expect(200)
     return login.body.token
   }
@@ -64,16 +64,18 @@ beforeAll(async () => {
   })
 
   beforeEach(async () => {
+
+    const firstSave = await api.post('/api/users').send(initialUsers[0])
+    const secondSave = await api.post('/api/users').send(initialUsers[1])
+
     let blogObject = new Blog(initialBlogs[0])
+    blogObject.user = firstSave.body._id
     await blogObject.save()
   
     blogObject = new Blog(initialBlogs[1])
+    blogObject.user = firstSave.body._id
     await blogObject.save()
-    const firstUser = initialUsers[0]
 
-    const dafuq = await api.post('/api/users').send(firstUser)
-    const secondUser = initialUsers[1]
-    await api.post('/api/users').send(secondUser)
   })
 
 describe('GET api/blogs', () => {
@@ -95,7 +97,7 @@ describe('GET api/blogs', () => {
 describe('POST api/blogs', () => {
 
     test(' with correct blog increases amount in blogs', async () => {
-        const token = await loginAndReturnToken()
+        const token = await loginAndReturnToken("admin", "password")
         const newBlog = {
             title: "How to live in Sweden",
             author: "Ulf Johanson ",
@@ -115,7 +117,7 @@ describe('POST api/blogs', () => {
     })
 
     test(' if likes is not defined, it is defined as 0', async () => {
-        const token = await loginAndReturnToken()
+        const token = await loginAndReturnToken("admin", "password")
         const newBlog = {
             title: "Introduction to manual testing",
             author: "Aleksi Mustonen",
@@ -133,7 +135,7 @@ describe('POST api/blogs', () => {
     })
 
     test(' if title is not defined, blog is not created and status is 400', async () => {
-        const token = await loginAndReturnToken()
+        const token = await loginAndReturnToken("admin", "password")
         const withoutTitle = {
             author: "Pekka Puupää",
             url: "suomi.fi"
@@ -147,7 +149,7 @@ describe('POST api/blogs', () => {
     })
 
     test(' if url is not defined, blog is not created and status is 400', async () => {
-        const token = await loginAndReturnToken()
+        const token = await loginAndReturnToken("admin", "password")
         const withoutUrl = {
             author: "Matti Mainio",
             title: "Suomalainen talousmarkkinoilla",
@@ -164,21 +166,36 @@ describe('POST api/blogs', () => {
 
 describe('DELETE api/blog/:id', async() => {
 
-    test(' when id is correct', async() => {
+    test(' when user is logged in and has correct id,  blog is deleted and status 204', async() => {
+        const token = await loginAndReturnToken("admin", "password")
         let allBlogs = await Blog.find({})
         const url = "/api/blogs/"  + allBlogs[0]._id
         const result = await api.delete(url)
+                                .set('Authorization', 'bearer ' + token)
                                 .expect(204)
         allBlogs = await Blog.find({})
         expect(allBlogs.length).toBe(1)
     })
 
     test(' when id dont exist, status 404 is retrieved', async() => {
+        const token = await loginAndReturnToken("admin", "password")
         const id = await nonExistingId();
         const url = "/api/blogs/" + id
         const result = await api.delete(url)
-                                .expect(204)
+                                .set('Authorization', 'bearer ' + token)
+                                .expect(404)
         const allBlogs = await Blog.find({})
+        expect(allBlogs.length).toBe(2)
+    })
+
+    test(' when user tries to delete blog which is not own, status 400 is retrieved', async() => {
+        const token = await loginAndReturnToken("user", "password")
+        let allBlogs = await Blog.find({})
+        const url = "/api/blogs/"  + allBlogs[0]._id
+        const result = await api.delete(url)
+                                .set('Authorization', 'bearer ' + token)
+                                .expect(405)
+        allBlogs = await Blog.find({})
         expect(allBlogs.length).toBe(2)
     })
 
