@@ -64,6 +64,9 @@ blogsRouter.delete('/:id', async(request, response) => {
           return response.status(401).json({ error: 'token missing or invalid' })
         }
         const blog = await Blog.findById(request.params.id)
+        if (!blog) {
+            return response.status(404).json({error: "Blog with this id dont exist"})
+        }
         if (blog.user.toString() !== decodedToken.id) {
             return response.status(405).json({error: 'You can remove only own blogs'})
         }
