@@ -8,12 +8,14 @@ const blogRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const config = require('./utils/config')
 const mongoose = require('mongoose')
+const loginRouter = require('./controllers/login')
 
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('build'))
 app.use('/api/blogs',blogRouter)
 app.use('/api/users',usersRouter)
+app.use('/api/login', loginRouter)
 
 mongoose.connect(config.mongoUrl, { useMongoClient: true })
 mongoose.Promise = global.Promise
