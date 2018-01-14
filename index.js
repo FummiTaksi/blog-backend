@@ -10,9 +10,12 @@ const config = require('./utils/config')
 const mongoose = require('mongoose')
 const loginRouter = require('./controllers/login')
 
+const middlewares = require('./middlewares/middlewares')
+
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('build'))
+app.use(middlewares.tokenExtractor)
 app.use('/api/blogs',blogRouter)
 app.use('/api/users',usersRouter)
 app.use('/api/login', loginRouter)
