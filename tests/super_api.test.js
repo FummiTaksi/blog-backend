@@ -50,6 +50,13 @@ const nonExistingId = async () => {
   
     return blog._id.toString()
   }
+
+
+  const loginAndReturnToken = async () => {
+    const admin = {username: "admin", password: "password"}
+    const login = await api.post('/api/login').send(admin).expect(200)
+    return login.body.token
+  }
   
 beforeAll(async () => {
     await Blog.remove({})
@@ -88,8 +95,7 @@ describe('GET api/blogs', () => {
 describe('POST api/blogs', () => {
 
     test(' with correct blog increases amount in blogs', async () => {
-        const admin = {username: "admin", password: "password"}
-        const login = await api.post('/api/login').send(admin).expect(200)
+        const token = await loginAndReturnToken()
         const newBlog = {
             title: "How to live in Sweden",
             author: "Ulf Johanson ",
@@ -99,7 +105,7 @@ describe('POST api/blogs', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
-            .set('Authorization', 'bearer ' + login.body.token)
+            .set('Authorization', 'bearer ' + token)
             .expect(201)
             .expect('Content-Type', /application\/json/)
 
@@ -109,6 +115,7 @@ describe('POST api/blogs', () => {
     })
 
     test(' if likes is not defined, it is defined as 0', async () => {
+        const token = await loginAndReturnToken()
         const newBlog = {
             title: "Introduction to manual testing",
             author: "Aleksi Mustonen",
@@ -116,6 +123,7 @@ describe('POST api/blogs', () => {
         }
         const result = await api.post('/api/blogs')
                                 .send(newBlog)
+                                .set('Authorization', 'bearer ' + token)
                                 .expect(201)
                                 .expect('Content-Type', /application\/json/)
         expect(result.body.likes).toBe(0)
@@ -125,18 +133,21 @@ describe('POST api/blogs', () => {
     })
 
     test(' if title is not defined, blog is not created and status is 400', async () => {
+        const token = await loginAndReturnToken()
         const withoutTitle = {
             author: "Pekka Puupää",
             url: "suomi.fi"
         }
         const result = await api.post('/api/blogs')
                                  .send(withoutTitle)
+                                 .set('Authorization', 'bearer ' + token)
                                  .expect(400)
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(2)
     })
 
     test(' if url is not defined, blog is not created and status is 400', async () => {
+        const token = await loginAndReturnToken()
         const withoutUrl = {
             author: "Matti Mainio",
             title: "Suomalainen talousmarkkinoilla",
@@ -144,6 +155,7 @@ describe('POST api/blogs', () => {
         }
         const result = await api.post('/api/blogs')
                                 .send(withoutUrl)
+                                .set('Authorization', 'bearer ' + token)
                                 .expect(400)
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(2)
