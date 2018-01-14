@@ -35,22 +35,22 @@ blogsRouter.post('/', async(request, response) => {
             return response.status(400).json({error: 'Bad Content'})
         }
         blogToBeAdded.likes = blogToBeAdded.likes ? blogToBeAdded.likes : 0
-        const userWithSameId = await User.find({_id: decodedToken.id})
-        const firstPerson = userWithSameId[0]
-        blogToBeAdded.user = firstPerson._id
+        const person = await User.findById(decodedToken.id)
+        blogToBeAdded.user = person._id
         const personToBeUpdated = {
-            name: firstPerson.name,
-            username: firstPerson.username,
-            adult: firstPerson.adult,
-            blogs: firstPerson.blogs
+            name: person.name,
+            username: person.username,
+            adult: person.adult,
+            blogs: person.blogs
         }
         const blog = new Blog(blogToBeAdded)
         personToBeUpdated.blogs = personToBeUpdated.blogs.concat(blog)
-        await User.findByIdAndUpdate(firstPerson._id, personToBeUpdated)
+        await User.findByIdAndUpdate(person._id, personToBeUpdated)
         const result = await blog.save()
         response.status(201).json(formatBlog(result))
     }
     catch(error) {
+        console.log("catch",error)
         response.status(400).json(error)
     }
 
@@ -58,6 +58,16 @@ blogsRouter.post('/', async(request, response) => {
 
 blogsRouter.delete('/:id', async(request, response) => {
     try {
+        const token = request.token
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+    
+        if (!token || !decodedToken.id) {
+          return response.status(401).json({ error: 'token missing or invalid' })
+        }
+        const blog = await Blog.findById(request.params.id)
+        if (blog.user.toString() !== decodedToken.id) {
+            return response.status(405).json({error: 'You can remove only own blogs'})
+        }
         const result = await Blog.findByIdAndRemove(request.params.id)
         return response.status(204).json(result)
     }
