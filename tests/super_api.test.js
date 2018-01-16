@@ -199,6 +199,23 @@ describe('DELETE api/blog/:id', async() => {
         expect(allBlogs.length).toBe(2)
     })
 
+    test(' deleting blog which dont have user is succesfull', async() =>{
+        const token = await loginAndReturnToken("user", "password")
+        const blogWithoutUser = {
+            title: "I have no user",
+            author: "Mr.Bond",
+            url: "wraa.fs"
+        }
+        const blog = await new Blog(blogWithoutUser)
+        const addedBlog = await blog.save()
+        const url = "/api/blogs/" + addedBlog._id
+        await api.delete(url)
+                  .set('Authorization', 'bearer ' + token)
+                  .expect(204)
+        const allBlogs = await Blog.find({})
+        expect(allBlogs.length).toBe(2)          
+    })
+
     test(' status 400 if id is not legit', async() => {
         await api.delete("/api/blogs/3532532").expect(400)
     })
