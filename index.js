@@ -23,7 +23,7 @@ app.use('/api/login', loginRouter)
 mongoose.connect(config.mongoUrl, { useMongoClient: true })
 mongoose.Promise = global.Promise
 
-const port = process.env.PORT || config.port
+const port = config.port
 
 
 const server = http.createServer(app)
