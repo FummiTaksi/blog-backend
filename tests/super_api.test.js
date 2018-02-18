@@ -329,7 +329,7 @@ describe('POST /api/users', async() => {
             const result = await api.post('/api/users')
                                     .send(withoutAdult)
                                     .expect(200)
-            expect(result.body.adult).toBeTruthy()
+            expect(!result.body.adult).toBeTruthy()
             const afterAdding = await usersInDb()
             expect(afterAdding[1].adult).toBeTruthy()
         })
