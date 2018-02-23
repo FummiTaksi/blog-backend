@@ -69,13 +69,16 @@ blogsRouter.delete('/:id', async(request, response) => {
         }
         if (!blog.user) {
             const result = await Blog.findByIdAndRemove(request.params.id)
-            return response.status(204).json(result)
+            return response.status(200).json(result)
         }
         if (blog.user.toString() !== decodedToken.id) {
             return response.status(405).json({error: 'You can remove only own blogs'})
         }
-        const result = await Blog.findByIdAndRemove(request.params.id)
-        return response.status(204).json(result)
+        const deleted = await Blog.findByIdAndRemove(request.params.id)
+        console.log("RESULT",deleted)
+        const formatted = formatBlog(deleted)
+        console.log("FORMATTED",formatted)
+        return response.status(200).json(formatted)
     }
     catch(error) {
         return response.status(400).json(error)
