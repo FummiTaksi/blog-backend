@@ -166,13 +166,15 @@ describe('POST api/blogs', () => {
 
 describe('DELETE api/blog/:id', async() => {
 
-    test(' when user is logged in and has correct id,  blog is deleted and status 204', async() => {
+    test(' when user is logged in and has correct id,  blog is deleted and status 200', async() => {
         const token = await loginAndReturnToken("admin", "password")
         let allBlogs = await Blog.find({})
         const url = "/api/blogs/"  + allBlogs[0]._id
         const result = await api.delete(url)
                                 .set('Authorization', 'bearer ' + token)
-                                .expect(204)
+                                .expect(200)
+        expect(result.id)
+        expect(!result._id)
         allBlogs = await Blog.find({})
         expect(allBlogs.length).toBe(1)
     })
@@ -209,9 +211,11 @@ describe('DELETE api/blog/:id', async() => {
         const blog = await new Blog(blogWithoutUser)
         const addedBlog = await blog.save()
         const url = "/api/blogs/" + addedBlog._id
-        await api.delete(url)
+        const result = await api.delete(url)
                   .set('Authorization', 'bearer ' + token)
-                  .expect(204)
+                  .expect(200)
+        expect(result.id)
+        expect(result._id)
         const allBlogs = await Blog.find({})
         expect(allBlogs.length).toBe(2)          
     })
