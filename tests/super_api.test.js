@@ -236,9 +236,11 @@ describe('PUT api/blog/:id', async() => {
         const url = '/api/blogs/' + firstBlog._id
         const result = await api.put(url).send(modified).expect(200)
         expect(result.body.likes).toBe(1000)
+        expect(result.body.id)
+        expect(!result.body._id)
     })
 
-    test('with not correct if status is 400', async() => {
+    test('with not correct id status is 400', async() => {
         let allBlogs = await Blog.find({})
         const firstBlog = allBlogs[0]
         const modified = {
@@ -252,6 +254,8 @@ describe('PUT api/blog/:id', async() => {
                         .send(modified)
                         .expect(400)
     })
+
+    
 })
 
 describe('POST /api/users', async() => {
