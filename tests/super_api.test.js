@@ -104,12 +104,15 @@ describe('POST api/blogs', () => {
             url: "sweden.com",
             likes: 7
           }
-        await api
+        const createResponse = await api
             .post('/api/blogs')
             .send(newBlog)
             .set('Authorization', 'bearer ' + token)
             .expect(201)
             .expect('Content-Type', /application\/json/)
+        const createdBlog = createResponse.body
+        expect(createdBlog.likes).toEqual(7)
+        expect(createdBlog.user.username).toEqual("admin")
 
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(initialBlogs.length + 1)
