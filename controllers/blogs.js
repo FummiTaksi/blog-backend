@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const jwt = require('jsonwebtoken')
 
 
@@ -11,13 +12,15 @@ const formatBlog = (blog) => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
-      user: blog.user
+      user: blog.user,
+      comments: blog.comments
     }
   }
 
 blogsRouter.get('/', async(request, response) => {
     const blogs = await Blog.find({})
-                        .populate('user', { name: 1, username: 1 , adult: 1} )
+                        .populate('user', { name: 1, username: 1 , adult: 1} ) 
+                        .populate('comments', {content: 1})
     response.json(blogs.map(formatBlog));
   })
 
@@ -101,6 +104,42 @@ blogsRouter.put('/:id', async(request, response) => {
     }
 
     catch(error) {
+        response.status(400).json(error)
+    }
+})
+
+blogsRouter.post('/:id/comments', async(request,response) => {
+    try {
+        const body = request.body
+        const blogOfComment = await Blog.findById(body.blogId)
+        if (!blogOfComment) {
+            return response.status(400).json({error: 'blogId didnt match to any blogs in database!'})
+        }
+        if (!body.content) {
+            return response.status(400).json({error: 'Comment was missing content!'})
+        }
+        const comment = {
+            content: body.content,
+            blog: body.blogId
+        }
+        const commentObject = new Comment(comment)
+        const blogToBeUpdated = {
+            title: blogOfComment.title,
+            author: blogOfComment.author,
+            url: blogOfComment.url,
+            likes: blogOfComment.likes,
+            user: blogOfComment.user,
+            comments: blogOfComment.comments
+        }
+
+        blogToBeUpdated.comments = blogToBeUpdated.comments.concat(commentObject)
+        await Blog.findByIdAndUpdate(blogOfComment._id, blogToBeUpdated)
+        const result = await commentObject.save()
+
+        response.status(201).json(result)
+    }
+    catch(error) {
+        console.log("ERROR",error)
         response.status(400).json(error)
     }
 })

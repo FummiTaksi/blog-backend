@@ -3,6 +3,7 @@ const { app, server } = require('../index')
 const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 
 const initialBlogs = [
     {
@@ -61,6 +62,7 @@ const nonExistingId = async () => {
 beforeAll(async () => {
     await Blog.remove({})
     await User.remove({})
+    await Comment.remove({})
   })
 
   beforeEach(async () => {
@@ -164,6 +166,54 @@ describe('POST api/blogs', () => {
                                 .expect(400)
         const response = await api.get('/api/blogs')
         expect(response.body.length).toBe(2)
+    })
+})
+
+describe('POST api/blog/:id/comments', async() => {
+    test(' if body misses content of comment, 400 is returned and comment is not created', async() => {
+        let allBlogs = await Blog.find({})
+        const firstBlog = allBlogs[0]
+        const noContent = {
+            blogId: firstBlog._id
+        }
+        const url = "/api/blogs/" + firstBlog._id + "/comments"
+        await api.post(url)
+                 .send(noContent)
+                 .expect(400)
+        const allComments = await Comment.find({})
+        expect(allComments.length).toBe(0)
+    })
+
+    test(' if blogId dont match to any blogs, status code is 400 and comment is not created ', async() => {
+        const id = await nonExistingId()
+        const wrongId = {
+            content: 'I like full-stack',
+            blogId: id
+        }
+        const url = "/api/blogs/" + id + "/comments"
+        await api.post(url)
+                 .send(wrongId)
+                 .expect(400)
+        const allComments = await Comment.find({})
+        expect(allComments.length).toBe(0)
+    })
+
+    test('with correct body, status is 201 and comment is created', async() => {
+        let allBlogs = await Blog.find({})
+        const firstBlog = allBlogs[0]
+        console.log("FIRSTBLOG ALUSSA",firstBlog)
+        const body = {
+            blogId: firstBlog._id,
+            content: 'Jippii'
+        }
+        const url = "/api/blogs/" + firstBlog._id + "/comments"
+        await api.post(url)
+                 .send(body)
+                 .expect(201)
+        const allComments = await Comment.find({})
+        expect(allComments.length).toBe(1)
+        const createdComment = allComments[0]
+        expect(createdComment.blog).toEqual(firstBlog._id)
     })
 })
 
